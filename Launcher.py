@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk, scrolledtext, messagebox
 import subprocess
 import os
+import platform  # Added to detect Mac vs Windows
 
 class ClusterLauncher:
     def __init__(self, root):
@@ -9,8 +10,11 @@ class ClusterLauncher:
         self.root.title("MOT Cluster Manager (Launcher)")
         self.root.geometry("600x450")
         
+        # Determine OS for correct MPI flags
+        self.os_type = platform.system()
+        
         # Config Area
-        lbl = ttk.Label(root, text="HPC Cluster Configuration", font=("Arial", 14, "bold"))
+        lbl = ttk.Label(root, text=f"HPC Cluster Configuration ({self.os_type} Detected)", font=("Arial", 14, "bold"))
         lbl.pack(pady=10)
         
         frm_cfg = ttk.Frame(root)
@@ -44,6 +48,7 @@ class ClusterLauncher:
             with open(path, "r") as f:
                 self.txt_hosts.insert("1.0", f.read())
         else:
+            # Default content
             self.txt_hosts.insert("1.0", "localhost slots=4")
 
     def save_config(self):
@@ -56,17 +61,30 @@ class ClusterLauncher:
         self.save_config()
         n_proc = self.ent_n.get()
         hostfile = "config/cluster_hosts.txt"
+        script = "Main_System.py"
         
-        cmd = ["mpiexec", "-n", n_proc, "-f", hostfile, "python", "Main_System.py"]
+        # --- HARVARD LEVEL FIX: OS DETECTION ---
+        # Windows (MS-MPI) uses -f
+        # Mac/Linux (OpenMPI) uses --hostfile and often requires --oversubscribe
         
-        self.lbl_status.config(text=f"Launching {n_proc} nodes...", foreground="blue")
+        if self.os_type == "Windows":
+            cmd = ["mpiexec", "-n", n_proc, "-f", hostfile, "python", script]
+        else:
+            # For Mac/Linux (OpenMPI)
+            # --oversubscribe allows spawning more processes than physical cores (useful for testing)
+            cmd = ["mpiexec", "-n", n_proc, "--hostfile", hostfile, "--oversubscribe", "python", script]
+        
+        self.lbl_status.config(text=f"Launching {n_proc} nodes on {self.os_type}...", foreground="blue")
+        print(f"Executing command: {' '.join(cmd)}") # Print to terminal for debugging
         
         try:
-            # We use Popen to let the launcher stay open or close independently
+            # We use Popen to let the launcher stay open
             subprocess.Popen(cmd)
-            self.lbl_status.config(text="Cluster Running.", foreground="green")
+            self.lbl_status.config(text="Cluster Running. Check for new Window.", foreground="green")
         except FileNotFoundError:
-            messagebox.showerror("Error", "MPI Executable not found.\nIs MS-MPI or OpenMPI installed?")
+            messagebox.showerror("Error", "MPI Executable not found.\nIs OpenMPI (Mac) or MS-MPI (Windows) installed?")
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to launch: {str(e)}")
 
 if __name__ == "__main__":
     root = tk.Tk()
