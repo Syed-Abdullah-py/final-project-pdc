@@ -68,7 +68,7 @@ class ClusterLauncher:
         # Mac/Linux (OpenMPI) uses --hostfile and often requires --oversubscribe
         
         if self.os_type == "Windows":
-            cmd = ["mpiexec", "-n", n_proc, "-f", hostfile, "python", script]
+            cmd = ["mpiexec", "-n", n_proc, "python", script]
         else:
             # For Mac/Linux (OpenMPI)
             # --oversubscribe allows spawning more processes than physical cores (useful for testing)

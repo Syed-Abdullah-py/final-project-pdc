@@ -16,7 +16,7 @@ class MOTEngine:
             'cylinder_capacity', 'first_use_date'
         ]
 
-    def load_data(self, file_paths, limit_per_file=50000):
+    def load_data(self, file_paths, limit_per_file=1000000):
         """
         Loads data from assigned CSVs.
         Uses chunks to handle large files (Optimization).
@@ -31,7 +31,7 @@ class MOTEngine:
                 # quotechar='"' handles the "BMW, 3 Series" comma issue
                 chunk_reader = pd.read_csv(
                     f_path, names=self.columns, header=0, 
-                    chunksize=5000, quotechar='"', escapechar='\\', 
+                    chunksize=100000, quotechar='"', escapechar='\\', 
                     on_bad_lines='skip', low_memory=False
                 )
 
@@ -80,7 +80,7 @@ class MOTEngine:
         if filters.get('max_miles'):
             df = df[df['test_mileage'] <= float(filters['max_miles'])]
             
-        return df.head(100)
+        return df
 
     def analyze(self, make, model, group_by):
         """ Returns aggregated stats (Sum/Count) for reduction """

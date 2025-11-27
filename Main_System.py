@@ -104,7 +104,7 @@ class MasterNodeGUI:
             self.tree.delete(item)
             
         if results:
-            final_df = pd.concat(results).head(200) # Limit for GUI
+            final_df = pd.concat(results) # Limit for GUI
             for _, r in final_df.iterrows():
                 self.tree.insert("", "end", values=(
                     r['test_id'], r['make'], r['model'], 
