@@ -150,12 +150,27 @@ class MOTApp:
         for i in range(1, self.num_workers):
             received_dicts.append(self.comm.recv(source=i))
 
-        # Merging Logic (Naive average of rates for display)
-        # Ideally, you refactor worker to return counts for accurate stats
-        all_keys = set().union(*received_dicts)
-        for k in all_keys:
-            vals = [d[k] for d in received_dicts if k in d]
-            final_series[k] = sum(vals) / len(vals)
+        # Merging Logic (Weighted Average)
+        aggregated_data = {}
+        
+        for d in received_dicts:
+            for k, v in d.items():
+                if k not in aggregated_data:
+                    aggregated_data[k] = {'count': 0, 'sum': 0}
+                aggregated_data[k]['count'] += v['count']
+                aggregated_data[k]['sum'] += v['sum']
+        
+        final_series = {}
+        for k, v in aggregated_data.items():
+            # Filter low sample sizes to reduce noise (Statistical Accuracy)
+            if v['count'] < 5: 
+                continue
+            
+            # Filter extreme mileage outliers (e.g., > 500,000 miles) if graph type is mileage
+            if g_type == 'mileage' and k > 500000:
+                continue
+            
+            final_series[k] = (v['sum'] / v['count']) * 100
 
         # Plotting
         self.plot_data(final_series, g_type)

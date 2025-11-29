@@ -20,7 +20,7 @@ def calculate_pass_rate_by_age(df, make, model):
     stats = subset.groupby('age')['is_pass'].agg(['count', 'sum'])
     stats['pass_rate'] = (stats['sum'] / stats['count']) * 100
     
-    return stats['pass_rate'].to_dict()
+    return stats[['count', 'sum']].to_dict('index')
 
 def calculate_pass_rate_by_mileage(df, make, model):
     subset = df[(df['make'] == make) & (df['model'] == model)].copy()
@@ -34,6 +34,6 @@ def calculate_pass_rate_by_mileage(df, make, model):
     subset['is_pass'] = subset['test_result'].isin(['P', 'PRS']).astype(int)
     
     stats = subset.groupby('mileage_group')['is_pass'].agg(['count', 'sum'])
-    stats['pass_rate'] = (stats['sum'] / stats['count']) * 100
     
-    return stats['pass_rate'].to_dict()
+    # Return counts and sums for weighted average in coordinator
+    return stats[['count', 'sum']].to_dict('index')
