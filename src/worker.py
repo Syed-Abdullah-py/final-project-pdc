@@ -11,6 +11,9 @@ def run_worker():
     # 1. Load Data
     df = load_local_data(rank, size - 1) # size-1 because rank 0 is master
 
+    # Wait for all workers to finish loading before starting
+    comm.Barrier()
+
     while True:
         # Wait for command from Coordinator
         command = comm.recv(source=0)

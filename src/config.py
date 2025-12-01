@@ -1,8 +1,8 @@
 import os
 
 # Limits to save time (as per PDF suggestion)
-# Set to None to load ALL data (Production), or 50000 for Development
-ROWS_PER_FILE = 50000 
+# Set to None to load ALL data (Production), or 1000000 for Development
+ROWS_PER_FILE = None
 
 # Paths
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

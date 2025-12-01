@@ -206,6 +206,10 @@ def run_coordinator():
         print("Error: Need at least 2 MPI processes (1 Coordinator, 1 Worker).")
         return
 
+    print("Coordinator: Waiting for all workers to load data...")
+    comm.Barrier()
+    print("Coordinator: All workers ready. Launching GUI...")
+
     root = tk.Tk()
     app = MOTApp(root, comm, size)
     
