@@ -1,4 +1,3 @@
-import sys
 from mpi4py import MPI
 from src.worker import run_worker
 from src.coordinator import run_coordinator

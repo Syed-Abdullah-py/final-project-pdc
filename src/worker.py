@@ -25,7 +25,6 @@ def run_worker():
             break
 
         elif tag == TAG_search:
-            # payload: {'make': 'BMW', 'model': '3 SERIES', 'year': 2014, ...}
             temp_df = df.copy()
             
             if payload.get('make'):
@@ -33,7 +32,6 @@ def run_worker():
             if payload.get('model'):
                 temp_df = temp_df[temp_df['model'] == payload['model']]
             if payload.get('year'):
-                # Extract year from first_use_date
                 temp_df = temp_df[temp_df['first_use_date'].dt.year == int(payload['year'])]
             
             # Range Logic (Mileage)
@@ -50,7 +48,6 @@ def run_worker():
             comm.send(result_data, dest=0)
 
         elif tag == TAG_ANALYZE:
-            # payload: {'type': 'age'|'mileage', 'make': ..., 'model': ...}
             if payload['type'] == 'age':
                 res = calculate_pass_rate_by_age(df, payload['make'], payload['model'])
             else:

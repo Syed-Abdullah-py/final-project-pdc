@@ -68,7 +68,6 @@ def load_local_data(rank, total_workers):
                     # Update counters
                     rows_loaded_this_file += len(chunk)
                     
-                    # --- REQUIREMENT: Print update every 1000 rows ---
                     # Since chunksize is 1000, this loop runs every 1000 rows.
                     print(f"[Worker {rank}] Imported {rows_loaded_this_file} rows from {filename}...")
 

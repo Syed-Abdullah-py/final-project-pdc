@@ -133,16 +133,7 @@ class MOTApp:
             self.comm.send({'tag': TAG_ANALYZE, 'payload': payload}, dest=i)
 
         # Aggregate (Weighted Average logic could be applied, but simple aggregation for now)
-        aggregated_data = {} # Key: Age/Mileage, Value: [pass_rate_sum, count]
-        
-        # Note: A proper aggregation requires raw counts from workers (Pass Count, Total Count).
-        # For simplicity in this example, we assume workers sent pre-calculated rates, 
-        # but technically we should sum numerators and denominators. 
-        # Let's assume workers send Rate dictionaries. We will average them (Approximation).
-        
-        # Better approach: Workers send {age: {'passed': X, 'total': Y}}
-        # But keeping code simple based on prompt constraints.
-        
+        aggregated_data = {}
         final_series = {}
 
         # Receiving
